@@ -1,0 +1,79 @@
+x-build: &build
+    context: .
+    dockerfile: ../laravel.Dockerfile
+
+x-environment: &environment
+    APP_DEBUG: ${DEBUG?}
+    APP_KEY: ${LARAVEL_APP_KEY?}
+
+    DB_CONNECTION: pgsql
+    DB_HOST: api-db
+    DB_DATABASE: &database-name cryptoBoard
+    DB_USERNAME: &database-username postgres
+    DB_PASSWORD: &database-password postgres
+
+    APP_NAME: Laravel
+    APP_ENV: local
+    APP_URL: http://localhost
+
+    LOG_CHANNEL: stdout
+    LOG_DEPRECATIONS_CHANNEL: null
+    LOG_LEVEL: debug
+
+    BROADCAST_DRIVER: log
+    CACHE_DRIVER: file
+    FILESYSTEM_DISK: local
+    QUEUE_CONNECTION: sync
+    SESSION_DRIVER: file
+    SESSION_LIFETIME: 120
+
+services:
+    api-vendor-installer:
+        build: { <<: *build, target: vendor }
+        env_file: ../.env
+        networks:
+            - api
+
+    api-migrator:
+        build: { <<: *build }
+        environment: { <<: *environment }
+        env_file: ../.env
+        command: migrate --force --seed
+        restart: on-failure
+        depends_on:
+            - api-db
+        networks:
+            - api
+
+    api-server:
+        build: { <<: *build, target: php }
+        environment: { <<: *environment }
+        env_file: ../.env
+        restart: always
+        volumes:
+            - ./:/workdir
+        depends_on:
+            - api-db
+            - api-migrator
+        networks:
+            - api
+
+    api-db:
+        image: postgres:15-alpine
+        volumes: [ api-db:/var/lib/postgresql/data ]
+        environment:
+            POSTGRES_DB: *database-name
+            POSTGRES_USER: *database-username
+            POSTGRES_PASSWORD: *database-password
+        restart: always
+        ports:
+            - "5433:5432"
+        networks:
+            - api
+
+networks:
+    api:
+        driver: bridge
+
+volumes:
+    api-db: { }
