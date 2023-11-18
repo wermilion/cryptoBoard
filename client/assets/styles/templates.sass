@@ -12,8 +12,26 @@ $third-text-light: #C0BBE0
 $primary-bg-dark: #110E22
 $secondary-bg-dark: #0D0B1C
 
-$primary-border-light: rgba(193, 189, 212, 0.12)
+$primary-border-dark: rgba(193, 189, 212, 0.12)
 
 $primary-text-dark: #E1DFEC
 $secondary-text-dark: rgba(225, 223, 236, 0.5)
 $third-text-dark: rgba(255, 255, 255, 0.5)
+
+
+//variables
+$primary-bg: "primary-bg"
+$secondary-bg: "secondary-bg"
+
+$primary-border: "primary-border"
+
+$primary-text: "primary-text"
+$secondary-text: "secondary-text"
+$third-text: "third-text"
+
+//сбор переменных для конкретной темы
+$light: ($primary-bg: $primary-bg-light, $secondary-bg: $secondary-bg-light, $primary-border: $primary-border-light, $primary-text: $primary-text-light, $secondary-text: $secondary-text-light, $third-text: $third-text-light)
+$dark: ($primary-bg: $primary-bg-dark, $secondary-bg: $secondary-bg-dark, $primary-border: $primary-border-dark, $primary-text: $primary-text-dark, $secondary-text: $secondary-text-dark, $third-text: $third-text-dark)
+
+// формирование переменной, которая содержит в себе все доступные цвета обеих тем для theme
+$theme: ("light": $light, "dark": $dark)
